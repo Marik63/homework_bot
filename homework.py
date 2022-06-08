@@ -45,6 +45,7 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 def send_message(bot, message):
     """Отправляет сообщение в Telegram чат."""
     try:
@@ -54,6 +55,7 @@ def send_message(bot, message):
         logger.error('Не было доставлено сообщение в чат')
         raise telegram.error.TelegramError(
             'Не было доставлено сообщение в чат')
+
 
 def get_api_answer(current_timestamp):
     """Извлекаем информацию из Эндпоинта API сервиса."""
@@ -79,8 +81,9 @@ def get_api_answer(current_timestamp):
         )
     return response.json()
 
+
 def check_response(response):
-    """Проверяет запрос API на корректность работы
+    """Проверяет запрос API на корректность работы.
     возвращая список домашних работ.
     """
     try:
@@ -95,8 +98,9 @@ def check_response(response):
         raise TypeError(message)
     return homework
 
+
 def parse_status(homework):
-    """Функция извлекает из информации о конкретной
+    """Функция извлекает из информации о конкретной.
     домашней работе статус этой работы.
     """
     homework_name = homework['homework_name']
@@ -117,10 +121,10 @@ def parse_status(homework):
         message = f'ключ {homework_status} не найден'
         logging.error(message)
         raise HWStatusRaise(message)
-    
 
     verdict = HOMEWORK_STATUSES[homework_status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
+
 
 def check_tokens():
     """Проверяем доступность переменных окружения."""
@@ -139,6 +143,7 @@ def check_tokens():
                     'Отсутствует обязательная переменная окружения:'
                     f'"{token_name}"')
         return False
+
 
 def main():
     """Основная логика работы бота."""
