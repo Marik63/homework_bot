@@ -1,0 +1,3 @@
+﻿ya_token=AQAAAAAGF_x1AAYckf7WlW8qC0FTtFeJTphAAUM
+tg_token=5304141150:AAE200SUQs4ppl-R0A1Rslhlb6w93SbgA8s
+chat_id=5546979697
