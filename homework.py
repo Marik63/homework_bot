@@ -49,7 +49,7 @@ logger.addHandler(handler)
 def send_message(bot, message):
     """Отправляет сообщение в Telegram чат."""
     try:
-        logging.info('Сообщение отправлено')        
+        logging.info('Сообщение отправлено')
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logging.info(f'Сообщение: {message}. Oтправлено')
     except requests.exceptions.SendMessageFailure:
@@ -91,7 +91,7 @@ def check_response(response):
         homeworks = response['homeworks']
         if type(homeworks) == list:
             return homeworks
-    
+
     except SystemError:
         raise TypeError('Ответ от Домашки не словарь')
 
@@ -126,15 +126,13 @@ def parse_status(homework):
     except KeyError:
         raise KeyError('Не найден ключ "homework_name"')
     if homework_name is None:
-        raise KeyError(
-            f'Ключ "homework_name" не найден')
+        raise KeyError(f'Ключ "homework_name" не найден')
     try:
         homework_status = homework['status']
     except KeyError:
         raise KeyError('Не найден ключ "status"')
     if homework_status is None:
-        raise KeyError(
-            f'Ключ "homework_status" не найден')
+        raise KeyError(f'Ключ "homework_status" не найден')
 
     if homework_status not in HOMEWORK_VERDICTS:
         message = f'ключ {homework_status} не найден'
@@ -156,6 +154,7 @@ def check_tokens():
 
 def main():
     """Основная логика работы бота."""
+    global old_message
     if not check_tokens():
         raise SystemExit('Я вышел')
 
