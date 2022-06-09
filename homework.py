@@ -126,13 +126,13 @@ def parse_status(homework):
     except KeyError:
         raise KeyError('Не найден ключ "homework_name"')
     if homework_name is None:
-        raise KeyError(f'Ключ "homework_name" не найден')
+        raise KeyError(f'Ключ {"homework_name"} не найден')
     try:
         homework_status = homework['status']
     except KeyError:
         raise KeyError('Не найден ключ "status"')
     if homework_status is None:
-        raise KeyError(f'Ключ "homework_status" не найден')
+        raise KeyError(f'Ключ {"homework_status"} не найден')
 
     if homework_status not in HOMEWORK_VERDICTS:
         message = f'ключ {homework_status} не найден'
