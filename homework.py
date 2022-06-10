@@ -55,7 +55,7 @@ def send_message(bot, message):
         logging.info(f'Сообщение: {message}. Oтправлено')
     except Exception as error:
         raise telegram.error.TelegramError(
-           f'Не отправляются сообщения, {error}'
+            f'Не отправляются сообщения, {error}'
         )
 
 
@@ -76,15 +76,15 @@ def get_api_answer(current_timestamp):
 
     if response.json() == []:
         raise SystemError(
-            'В ответе от запроса API новый статус не появился—список работ пуст'
+            'В ответе от запроса API новый статус'
+            'не появился—список работ пуст'
         )
     return response.json()
 
 
 def check_response(response):
-    """
-    Проверяет запрос API на корректность работы
-    возвращая список домашних работ.
+    """Проверяет запрос API на корректность работы
+        возвращая список домашних работ.
     """
     try:
         logging.info('Смотрим словарь')
