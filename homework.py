@@ -44,6 +44,7 @@ formatter = logging.Formatter(
 )
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+old_message = ''
 
 
 def send_message(bot, message):
@@ -52,9 +53,10 @@ def send_message(bot, message):
         logging.info('Сообщение отправлено')
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logging.info(f'Сообщение: {message}. Oтправлено')
-    except requests.exceptions.SendMessageFailure:
-        raise requests.exceptions.SendMessageFailure(
-            'Не было доставлено сообщение в чат')
+    except Exception as error:
+        raise telegram.error.TelegramError(
+           f'Не отправляются сообщения, {error}'
+        )
 
 
 def get_api_answer(current_timestamp):
@@ -65,56 +67,37 @@ def get_api_answer(current_timestamp):
         logging.info('Начало запроса')
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
     except Exception:
-        message = logging
-        raise requests.exceptions.APIResponseStatusCodeException(message)
+        message = logger
+        raise SystemError(message)
 
     if response.status_code != HTTPStatus.OK:
-        message = logging
-        raise requests.exceptions.APIResponseStatusCodeException(message)
+        message = logger
+        raise SystemError(message)
 
     if response.json() == []:
-        raise requests.exceptions.APIResponseStatusCodeException(
-            # Прошу пояснить, что здесь должно быть. (message)?
-            'В ответе от запроса API не может быть пустым'
+        raise SystemError(
+            'В ответе от запроса API новый статус не появился—список работ пуст'
         )
     return response.json()
 
 
 def check_response(response):
-    """Проверяет запрос API на корректность работы.
+    """
+    Проверяет запрос API на корректность работы
     возвращая список домашних работ.
     """
     try:
         logging.info('Смотрим словарь')
-        type(response) == dict
-        response['current_date']
-        homeworks = response['homeworks']
-        if type(homeworks) == list:
-            return homeworks
+        if type(response) == dict:
+            response['current_date']
+            homeworks = response['homeworks']
+            if type(homeworks) == list:
+                return homeworks
+        else:
+            raise SystemError('Тип ключа homeworks не list')
 
     except SystemError:
         raise TypeError('Ответ от Домашки не словарь')
-
-    try:
-        logging.info('Список домашних работ')
-        homework = response['homeworks']
-    except KeyError:
-        raise KeyError('Не найден ключ "homeworks"')
-    # Хочу проверить значение, ValuesError выдаёт ошибку
-    # try:
-    #     logging.info('Список домашних работ')
-    #     homework = response['status']
-    # except ValuesError:
-    #     raise ValuesError('Не найдено значение "status"')
-
-    if not isinstance(homework, list):
-        message = 'Ответ от API не может быть списком'
-        # Прошу объяснить, что должно быть в сообщении
-        raise TypeError(message)
-    return homework
-    # Хочу вернуть ключи homeworks и current_date.
-    # return (homeworks, current_date) вот так?
-    # ПРОШУ ЗДЕСЬ ПОМОЩЬ!
 
 
 def parse_status(homework):
@@ -157,6 +140,7 @@ def main():
     global old_message
     if not check_tokens():
         raise SystemExit('Я вышел')
+    logging.critical('Всё упало! Зовите админа!1!111')
 
     bot = telegram.Bot(TELEGRAM_TOKEN)
     bot.get_chat(TELEGRAM_CHAT_ID)
