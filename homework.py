@@ -83,10 +83,7 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    """
-    Проверяет запрос API на корректность работы
-    возвращая список домашних работ.
-    """
+    """Проверяет запрос API."""
     try:
         logging.info('Смотрим словарь')
         if type(response) == dict:
@@ -102,10 +99,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """
-    Функция извлекает из информации о конкретной
-    домашней работе статус этой работы.
-    """
+    """Извлекаем статус домашки."""
     try:
         homework_name = homework['homework_name']
     except KeyError:
