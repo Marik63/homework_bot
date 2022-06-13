@@ -73,10 +73,10 @@ def get_api_answer(current_timestamp):
 
     if response.status_code != HTTPStatus.OK:
         raise APIStatusCodeError(
-                'Неверный ответ сервера: '
-                f'http code = {response.status_code}; '
-                f'reason = {response.reason}; '
-                f'content = {response.text}'
+            'Неверный ответ сервера: '
+            f'http code = {response.status_code}; '
+            f'reason = {response.reason}; '
+            f'content = {response.text}'
         )
 
     if response.json() == []:
@@ -89,21 +89,17 @@ def get_api_answer(current_timestamp):
 
 def check_response(response):
     """Проверяет наличие всех ключей в ответе API."""
-    try:
-        logging.info('Проверка ответа от API начата')
-        if isinstance(response) == dict:
-            response['current_date']
-            homeworks = response['homeworks']
-            if isinstance(homeworks) == list:
-                return homeworks
-        else:
-            if not isinstance(response, list):
-                raise TypeError(
-                    f'Ответ от API не является списком: response = {response}'
-                )
-
-    except Exception:
-        raise TypeError('Ответ от Домашки не словарь')
+    logging.info('Проверка ответа от API начата')
+    if isinstance(response) == dict:
+        response['current_date']
+        homeworks = response['homeworks']
+        if isinstance(homeworks) == list:
+            return homeworks
+    else:
+        if not isinstance(response, list):
+            raise TypeError(
+                f'Ответ от API не является списком: response = {response}'
+            )
 
 
 def parse_status(homework):
