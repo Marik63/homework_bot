@@ -9,7 +9,8 @@ import telegram
 from dotenv import load_dotenv
 
 from exceptions import (
-    APIStatusCodeError, CheckResponseException, HWStatusRaise, ExchangeError, TelegramError
+    APIStatusCodeError, CheckResponseException, HWStatusRaise,
+    ExchangeError, TelegramError
 )
 
 load_dotenv()
