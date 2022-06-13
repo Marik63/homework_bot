@@ -87,18 +87,17 @@ def get_api_answer(current_timestamp):
     return response.json()
 
 
-def check_response(response):
-    """Проверяет наличие всех ключей в ответе API."""
-    try:
-        logging.info('Проверка ответа от API начата')
-        if isinstance(response) != dict:
-            raise TypeError('API возвращает не словарь')
-        if not isinstance(response, list):
-            raise TypeError(
-                f'Ответ от API не является списком: response = {response}'
-            )
-    except Exception:
-        raise TypeError('Ответ от Домашки не словарь')
+def check_response(response): 
+    """Проверяет запрос API.""" 
+    if not isinstance(response, dict):
+        raise TypeError('Ошибка типа данных в response')
+    homeworks = response.get('homeworks')
+    if not isinstance(homeworks, list):
+        raise TypeError('Ошибка типа данных переменной homeworks')
+    if len(homeworks) != 0:
+        return homeworks
+    else:
+        raise IndexError('Список работ пуст')
 
 
 def parse_status(homework):
