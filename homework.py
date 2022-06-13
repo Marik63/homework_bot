@@ -94,15 +94,11 @@ def check_response(response):
         if isinstance(response) == dict:
             response['current_date']
             homeworks = response['homeworks']
-        if isinstance(homeworks) == list:
             return homeworks
-        if not isinstance(response, list):
-            raise TypeError(
-                f'Ответ от API не является списком: response = {response}'
-            )
-
     except Exception:
-        raise TypeError('Ответ от Домашки не словарь')
+        raise TypeError(
+                f'Ответ от API не является словарем: response = {response}'
+            )
 
 
 def parse_status(homework):
