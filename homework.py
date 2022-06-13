@@ -91,7 +91,7 @@ def check_response(response):
     """Проверяет наличие всех ключей в ответе API."""
     try:
         logging.info('Проверка ответа от API начата')
-        if isinstance(response) == dict:
+        if not isinstance(response) == dict:
             response['current_date']
             homeworks = response['homeworks']
             if isinstance(homeworks) == list:
