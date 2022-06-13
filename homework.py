@@ -87,8 +87,8 @@ def get_api_answer(current_timestamp):
     return response.json()
 
 
-def check_response(response): 
-    """Проверяет запрос API.""" 
+def check_response(response):
+    """Проверяет запрос API."""
     if not isinstance(response, dict):
         raise TypeError('Ошибка типа данных в response')
     homeworks = response.get('homeworks')
