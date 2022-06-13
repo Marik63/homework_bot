@@ -94,9 +94,9 @@ def check_response(response):
         if isinstance(response) == dict:
             response['current_date']
             homeworks = response['homeworks']
-            if isinstance(homeworks) == list:
+            if not isinstance(homeworks) == list:
                 return homeworks
-    except Exception:
+    except SystemError:
         raise TypeError('Ответ от Домашки не словарь')
 
 
