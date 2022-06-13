@@ -14,7 +14,7 @@ class APIStatusCodeError(Exception):
     pass
 
 
-class APIResponseError(Exception):
+class CheckResponseException(Exception):
     pass
 
 

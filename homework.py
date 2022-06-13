@@ -9,7 +9,7 @@ import telegram
 from dotenv import load_dotenv
 
 from exceptions import (
-    APIStatusCodeError, HWStatusRaise, ExchangeError, TelegramError
+    APIStatusCodeError, CheckResponseException, HWStatusRaise, ExchangeError, TelegramError
 )
 
 load_dotenv()
@@ -89,16 +89,21 @@ def get_api_answer(current_timestamp):
 
 def check_response(response):
     """Проверяет наличие всех ключей в ответе API."""
-    try:
-        logging.info('Проверка ответа от API начата')
-        if isinstance(response) == dict:
-            response['current_date']
-            homeworks = response['homeworks']
-            return homeworks
-        if not isinstance(homeworks) == list:
-            return homeworks
-    except SystemError:
-        raise TypeError('Ответ от Домашки не словарь')
+    logging.info('Проверка ответа от API начата')
+    if isinstance(response) != dict:
+        raise TypeError('API возвращает не словарь')
+    errors = response.get('error')
+    if errors:
+        raise CheckResponseException(
+            'API возвращает ошибки (ошибки в запросе)')
+    homeworks = response.get('homeworks')
+    if homeworks is None:
+        raise CheckResponseException(
+            'ответ от API не содержит ключа "homeworks"')
+    if isinstance(homeworks) != list:
+        raise CheckResponseException(
+            'домашки приходят не в виде списка в ответ от API')
+    return homeworks
 
 
 def parse_status(homework):
