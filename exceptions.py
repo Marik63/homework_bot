@@ -6,13 +6,17 @@ class NoneTokensENV(Exception):
     pass
 
 
-class SendMessageFailure(Exception):
-    """Исключение отправки сообщения."""
-
+class ExchangeError(Exception):
     pass
 
 
-class APIResponseStatusCodeException(Exception):
-    """Исключение сбоя запроса к API."""
+class APIStatusCodeError(Exception):
+    pass
 
+
+class APIResponseError(Exception):
+    pass
+
+
+class TelegramError(Exception):
     pass

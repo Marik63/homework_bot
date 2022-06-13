@@ -8,7 +8,9 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-from exceptions import HWStatusRaise
+from exceptions import (
+    APIStatusCodeError, HWStatusRaise, ExchangeError, TelegramError
+)
 
 load_dotenv()
 
@@ -66,16 +68,19 @@ def get_api_answer(current_timestamp):
     try:
         logging.info('Начало запроса')
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
-    except Exception:
-        message = logger
-        raise SystemError(message)
+    except Exception as exc:
+        raise ExchangeError(f'Ошибка подключения к телеграмм: {exc}') from exc
 
     if response.status_code != HTTPStatus.OK:
-        message = logger
-        raise SystemError(message)
+        raise APIStatusCodeError(
+                'Неверный ответ сервера: '
+                f'http code = {response.status_code}; '
+                f'reason = {response.reason}; '
+                f'content = {response.text}'
+        )
 
     if response.json() == []:
-        raise SystemError(
+        raise TelegramError(
             'В ответе от запроса API новый статус'
             'не появился—список работ пуст'
         )
@@ -83,18 +88,21 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    """Проверяет запрос API."""
+    """Проверяет наличие всех ключей в ответе API."""
     try:
-        logging.info('Смотрим словарь')
-        if type(response) == dict:
+        logging.info('Проверка ответа от API начата')
+        if isinstance(response) == dict:
             response['current_date']
             homeworks = response['homeworks']
-            if type(homeworks) == list:
+            if isinstance(homeworks) == list:
                 return homeworks
         else:
-            raise SystemError('Тип ключа homeworks не list')
+            if not isinstance(response, list):
+                raise TypeError(
+                    f'Ответ от API не является списком: response = {response}'
+                )
 
-    except SystemError:
+    except Exception:
         raise TypeError('Ответ от Домашки не словарь')
 
 
