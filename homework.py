@@ -91,16 +91,12 @@ def check_response(response):
     """Проверяет наличие всех ключей в ответе API."""
     try:
         logging.info('Проверка ответа от API начата')
-        if not isinstance(response) == dict:
-            response['current_date']
-            homeworks = response['homeworks']
-            if isinstance(homeworks) == list:
-                return homeworks
-        else:
+        if isinstance(response) != dict:
+            raise TypeError('API возвращает не словарь')
+        if not isinstance(response, list):
             raise TypeError(
                 f'Ответ от API не является списком: response = {response}'
             )
-
     except Exception:
         raise TypeError('Ответ от Домашки не словарь')
 
