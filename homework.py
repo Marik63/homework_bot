@@ -9,7 +9,7 @@ import telegram
 from dotenv import load_dotenv
 
 from exceptions import (
-    APIStatusCodeError, HWStatusRaise, ExchangeError, TelegramError
+    APIStatusCodeError, HWStatusRaise, ExchangeError, EmptyError
 )
 
 load_dotenv()
@@ -80,7 +80,7 @@ def get_api_answer(current_timestamp):
         )
 
     if response.json() == []:
-        raise TelegramError(
+        raise EmptyError(
             'В ответе от запроса API новый статус'
             'не появился—список работ пуст'
         )

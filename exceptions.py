@@ -18,5 +18,5 @@ class CheckResponseException(Exception):
     pass
 
 
-class TelegramError(Exception):
+class EmptyError(Exception):
     pass
