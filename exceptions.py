@@ -2,7 +2,7 @@
     pass
 
 
-class NoneTokensENV(Exception):
+class NoDictKey(Exception):
     pass
 
 
@@ -14,9 +14,5 @@ class APIStatusCodeError(Exception):
     pass
 
 
-class CheckResponseException(Exception):
-    pass
-
-
-class EmptyError(Exception):
+class TelegramError(Exception):
     pass

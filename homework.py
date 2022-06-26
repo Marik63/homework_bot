@@ -1,4 +1,4 @@
-from http import HTTPStatus
+﻿from http import HTTPStatus
 import logging
 import os
 import sys
@@ -9,7 +9,7 @@ import telegram
 from dotenv import load_dotenv
 
 from exceptions import (
-    APIStatusCodeError, HWStatusRaise, ExchangeError, EmptyError
+    APIStatusCodeError, NoDictKey, ExchangeError, TelegramError
 )
 
 load_dotenv()
@@ -56,7 +56,7 @@ def send_message(bot, message):
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logging.info(f'Сообщение: {message}. Oтправлено')
     except Exception as error:
-        raise telegram.error.TelegramError(
+        raise TelegramError(
             f'Не отправляются сообщения, {error}'
         )
 
@@ -78,53 +78,63 @@ def get_api_answer(current_timestamp):
             f'reason = {response.reason}; '
             f'content = {response.text}'
         )
-
-    if response.json() == []:
-        raise EmptyError(
-            'В ответе от запроса API новый статус'
-            'не появился—список работ пуст'
-        )
     return response.json()
 
 
 def check_response(response):
-    """Проверяет запрос API."""
+    """Проверяет наличие всех ключей в ответе API practicum."""
     if not isinstance(response, dict):
-        raise TypeError('Ошибка типа данных в response')
-    homeworks = response.get('homeworks')
-    if not isinstance(homeworks, list):
-        raise TypeError('Ошибка типа данных переменной homeworks')
-    if len(homeworks) != 0:
-        return homeworks
-    else:
-        raise IndexError('Список работ пуст')
+        raise TypeError(
+            'В ответе от API нет словаря: '
+            f'response = {response}'
+        )
+    if response.get('homeworks') is None:
+        raise NoDictKey(
+            'В ответе API отсутствует необходимый ключ "homeworks"!'
+        )
+    if response.get('current_date') is None:
+        raise NoDictKey(
+            'В ответе API отсутствует необходимый ключ "current_date"!'
+        )
+    if not isinstance(response.get('homeworks'), list):
+        raise TypeError(
+            'В ответе API в ключе "homeworks" нет списка: '
+            f'response = {response.get("homeworks")}'
+        )
+    logging.info(response['homeworks'])
+    logging.info('Проверка ответа от API завершена.')
+    if len(response.get('homeworks')) == 0:
+        logging.info('Список работ пустой или работу еще не взяли на проверку')
+    return response['homeworks']
 
 
 def parse_status(homework):
-    """Извлекаем статус домашки."""
-    try:
+    """Проверяем статус домашнего задания."""
+    logging.info('Начинаем проверку статуса домашнего задания.')
+    if homework['homework_name'] is None:
+        raise NoDictKey(
+            'В ответе API отсутствует необходимый ключ "homework_name"!'
+        )
+    else:
         homework_name = homework['homework_name']
-    except KeyError:
-        raise KeyError('Не найден ключ "homework_name"')
-    if homework_name is None:
-        raise KeyError(f'Ключ {"homework_name"} не найден')
-    try:
+    if homework['status'] is None:
+        raise NoDictKey(
+            'В ответе API отсутствует необходимый ключ "status"!'
+        )
+    else:
         homework_status = homework['status']
-    except KeyError:
-        raise KeyError('Не найден ключ "status"')
-    if homework_status is None:
-        raise KeyError(f'Ключ {"homework_status"} не найден')
-
-    if homework_status not in HOMEWORK_VERDICTS:
-        message = f'ключ {homework_status} не найден'
-        raise HWStatusRaise(message)
-
-    verdict = HOMEWORK_VERDICTS[homework_status]
+    if HOMEWORK_VERDICTS[homework_status] is None:
+        raise NoDictKey(
+            f'В словаре "HOMEWORK_VERDICTS" не найден ключ {homework_status}!'
+        )
+    else:
+        verdict = HOMEWORK_VERDICTS[homework_status]
+    logging.info('Окончание проверки статуса домашнего задания.')
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
-def check_tokens():
-    """Проверяем доступность переменных окружения."""
+def check_tokens() -> bool:
+    """Проверяем доступность всех необходимых переменных окружения."""
     ALL_TOKENS = {
         'PRACTICUM_TOKEN': PRACTICUM_TOKEN,
         'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
@@ -133,7 +143,13 @@ def check_tokens():
     return all(ALL_TOKENS.values())
 
 
-def main():
+# def check_tokens() -> bool:
+#     """Проверяем наличие всех необходимых переменных окружения."""
+#     tokens = [PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]
+#     return all(tokens)
+
+
+def main() -> None:
     """Основная логика работы бота."""
     global old_message
     if not check_tokens():
@@ -141,6 +157,7 @@ def main():
     logging.critical('Всё упало! Зовите админа!1!111')
 
     bot = telegram.Bot(TELEGRAM_TOKEN)
+    logging.info('Запуск бота')
     bot.get_chat(TELEGRAM_CHAT_ID)
     current_timestamp = int(time.time()) - RETRY_TIME
 
